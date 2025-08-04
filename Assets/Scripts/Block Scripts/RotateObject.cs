@@ -6,6 +6,11 @@ public class RotateObject : MonoBehaviour
     private Vector3 lastMousePosition;
     private bool isDragging = false;
 
+    private void Start()
+    {
+        transform.rotation = Quaternion.Euler(45, 45, 0);
+    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0))

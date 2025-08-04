@@ -4,20 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 public class MoveBlock : Subject
 {
-    private Vector3 initialPosition;
-    private float moveSpeed = 5f;
+    private float moveSpeed = 10f;
 
-    [HideInInspector]
-    public bool isMoving = false;
-
-    private void Awake()
-    {
-        initialPosition = transform.position;
-    }
+    [HideInInspector] public bool isMoving = false;
+    private Vector3 mouseDownPos;
 
     private void OnEnable()
     {
-        transform.position = transform.parent.TransformPoint(initialPosition);
+        ChangeMaterialColor("Plane", Color.white);
+        FindObjectOfType<AudioEventListener>().RegisterObservers();
     }
 
     private void Update()
@@ -30,20 +25,30 @@ public class MoveBlock : Subject
 
     private void OnMouseDown()
     {
-        if (GameManager.Instance != null &&
+        mouseDownPos = Input.mousePosition;
+    }
+
+    private void OnMouseUp()
+    {
+        float distance = Vector3.Distance(mouseDownPos, Input.mousePosition);
+        if (distance < 0.1f)
+        {
+            if (GameManager.Instance != null &&
             !GameManager.Instance.IsProcessing &&
             !GetComponent<BlockProperties>().isHardBlock &&
             !GetComponent<BlockProperties>().isBlockCounting)
-        {
-            isMoving = true;
-            GameManager.Instance.IsProcessing = true;
-            NotifyObserver(GameEvent.MinusMove);
-            NotifyObserver(GameEvent.MoveSFX);
-        }
+            {
+                isMoving = true;
+                GameManager.Instance.IsProcessing = true;
+                ChangeMaterialColor("Plane", Color.green);
+                NotifyObserver(GameEvent.MinusMove);
+                NotifyObserver(GameEvent.MoveSFX);
 
-        if (!IsPathBlocked())
-        {
-            NotifyObserver(GameEvent.MinusCounting);
+                if (!IsPathBlocked())
+                {
+                    NotifyObserver(GameEvent.MinusCounting);
+                }
+            }
         }
     }
 
@@ -52,14 +57,23 @@ public class MoveBlock : Subject
         if (isMoving)
         {
             isMoving = false;
-            GameManager.Instance.IsProcessing = false;
-            StartCoroutine(FlashColor(Color.red, 0.25f));
+            if (GameManager.Instance.TotalMoves > 0)
+            {
+                GameManager.Instance.IsProcessing = false;
+            }
+            StartCoroutine(FlashColor());
         }
 
         NotifyObserver(GameEvent.BlockedSFX);
 
         Vector3 localPos = transform.parent.InverseTransformPoint(transform.position);
-        localPos = new Vector3(Mathf.Round(localPos.x), Mathf.Round(localPos.y), Mathf.Round(localPos.z));
+        float step = 0.5f;
+        localPos = new Vector3(
+            Mathf.Round(localPos.x / step) * step,
+            Mathf.Round(localPos.y / step) * step,
+            Mathf.Round(localPos.z / step) * step
+        );
+
         transform.position = transform.parent.TransformPoint(localPos);
     }
 
@@ -79,13 +93,13 @@ public class MoveBlock : Subject
 
     private bool IsPathBlocked()
     {
-        Ray ray = new Ray(transform.position, -transform.right);
-        float maxDistance = 1.1f;
+        Vector3 direction = -transform.right;
+        float maxDistance = 10f;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, maxDistance))
         {
-            var otherBlock = hit.collider.GetComponent<BlockProperties>();
-            if (otherBlock != null && otherBlock != this)
+            if (hit.collider.gameObject != gameObject &&
+                hit.collider.GetComponent<BlockProperties>() != null)
             {
                 return true;
             }
@@ -94,26 +108,21 @@ public class MoveBlock : Subject
         return false;
     }
 
+    private IEnumerator FlashColor()
+    {
+        ChangeMaterialColor("Plane", Color.red);
+        yield return new WaitForSeconds(0.25f);
+        ChangeMaterialColor("Plane", Color.white);
+    }
 
-    private IEnumerator FlashColor(Color color, float duration)
+    private void ChangeMaterialColor(string childName, Color color)
     {
         foreach (Transform child in transform)
         {
-            if (child.name.Contains("Plane"))
+            if (child.name.Contains(childName))
             {
                 var renderer = child.GetComponent<Renderer>();
                 if (renderer != null) renderer.material.color = color;
-            }
-        }
-
-        yield return new WaitForSeconds(duration);
-
-        foreach (Transform child in transform)
-        {
-            if (child.name.Contains("Plane"))
-            {
-                var renderer = child.GetComponent<Renderer>();
-                if (renderer != null) renderer.material.color = Color.white;
             }
         }
     }

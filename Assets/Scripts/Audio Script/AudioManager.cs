@@ -10,6 +10,8 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Clips")]
     public AudioClip blocked;
     public AudioClip move;
+    public AudioClip complete;
+    public AudioClip fail;
 
     private void Awake()
     {

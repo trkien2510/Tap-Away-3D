@@ -1,11 +1,14 @@
 public enum GameEvent
 {
+    //gameplay
     MinusCounting,
     MinusMove,
     Complete,
-    False,
+    Fail,
 
     //audio
     BlockedSFX,
     MoveSFX,
+    LevelCompleteSFX,
+    LevelFailSFX,
 }

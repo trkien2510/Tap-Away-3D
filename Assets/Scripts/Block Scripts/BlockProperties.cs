@@ -19,6 +19,10 @@ public class BlockProperties : Subject, IObserver
     [HideInInspector] public bool isBlockCounting = false;
     [Range(0, 10)] [SerializeField] private int blockCounting = 0;
 
+    //init
+    private int initialBlockCounting;
+    private Vector3 initPos;
+
     [System.Serializable]
     public enum Directions
     {
@@ -30,14 +34,25 @@ public class BlockProperties : Subject, IObserver
         Down
     }
 
+    private void Awake()
+    {
+        initialBlockCounting = blockCounting;
+        initPos = transform.position;
+    }
+
     private void OnEnable()
     {
+        transform.position = transform.parent.TransformPoint(initPos);
+
         blockMaterial = GetComponent<Renderer>().sharedMaterial;
+        blockCounting = initialBlockCounting;
 
         foreach (var subject in FindObjectsOfType<Subject>())
         {
             subject.AddObserver(this);
         }
+
+        BlockType();
     }
 
     private void OnDisable()
@@ -56,18 +71,23 @@ public class BlockProperties : Subject, IObserver
             lastDirection = direction;
         }
 
+#if UNITY_EDITOR
         EditorApplication.delayCall += () =>
         {
             BlockType();
         };
+#endif
     }
 
     public void OnNotify(GameEvent action)
     {
         if (action == GameEvent.MinusCounting)
         {
-            blockCounting = (blockCounting >= 1) ? blockCounting-- : 0;
-            BlockType();
+            if (isBlockCounting && blockCounting > 0)
+            {
+                blockCounting--;
+                BlockType();
+            }
         }
     }
 

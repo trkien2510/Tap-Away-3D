@@ -1,11 +1,12 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class UIManager : MonoBehaviour, IObserver
+public class UIEventListener : MonoBehaviour, IObserver
 {
     [SerializeField] private GameObject currentLevel;
     [SerializeField] private GameObject totalMoves;
-    [SerializeField] private GameObject levelFalse;
+    [SerializeField] private GameObject levelFail;
     [SerializeField] private GameObject levelComplete;
 
     private void Update()
@@ -18,6 +19,11 @@ public class UIManager : MonoBehaviour, IObserver
     }
 
     private void OnEnable()
+    {
+        RegisterObservers();
+    }
+
+    public void RegisterObservers()
     {
         foreach (var subject in FindObjectsOfType<Subject>())
         {
@@ -40,8 +46,33 @@ public class UIManager : MonoBehaviour, IObserver
             case GameEvent.MinusMove:
                 GameManager.Instance.TotalMoves -= 1;
                 break;
+            case GameEvent.Complete:
+                StartCoroutine(ShowPanel(levelComplete));
+                break;
+            case GameEvent.Fail:
+                StartCoroutine(ShowPanel(levelFail));
+                break;
             default:
                 break;
+        }
+    }
+
+    IEnumerator ShowPanel(GameObject obj)
+    {
+        obj.SetActive(true);
+        GameManager.Instance.IsProcessing = true;
+        GameManager.Instance.IsLoading = true;
+        yield return new WaitForSeconds(2f);
+        obj.SetActive(false);
+        GameManager.Instance.IsProcessing = false;
+        GameManager.Instance.IsLoading = false;
+        if (obj == levelComplete)
+        {
+            FindObjectOfType<LevelLoader>().LoadNextLevel();
+        }
+        else if (obj == levelFail)
+        {
+            FindObjectOfType<LevelLoader>().ReloadLevel();
         }
     }
 }
