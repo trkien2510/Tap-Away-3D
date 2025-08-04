@@ -18,7 +18,7 @@ public class LevelManager : Subject
             NotifyObserver(GameEvent.LevelCompleteSFX);
             sended = true;
         }
-        else if (!IsLevelComplete() && GameManager.Instance.TotalMoves <= 0 && !sended)
+        else if (!IsLevelComplete() && GameManager.Instance.TotalMoves < 0 && !sended)
         {
             NotifyObserver(GameEvent.Fail);
             NotifyObserver(GameEvent.LevelFailSFX);
