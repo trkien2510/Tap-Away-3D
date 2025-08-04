@@ -67,13 +67,7 @@ public class MoveBlock : Subject
         NotifyObserver(GameEvent.BlockedSFX);
 
         Vector3 localPos = transform.parent.InverseTransformPoint(transform.position);
-        float step = 0.5f;
-        localPos = new Vector3(
-            Mathf.Round(localPos.x / step) * step,
-            Mathf.Round(localPos.y / step) * step,
-            Mathf.Round(localPos.z / step) * step
-        );
-
+        localPos = new Vector3(Mathf.Round(localPos.x), Mathf.Round(localPos.y), Mathf.Round(localPos.z));
         transform.position = transform.parent.TransformPoint(localPos);
     }
 
