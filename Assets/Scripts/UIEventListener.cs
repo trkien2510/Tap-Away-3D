@@ -59,6 +59,7 @@ public class UIEventListener : MonoBehaviour, IObserver
 
     IEnumerator ShowPanel(GameObject obj)
     {
+        yield return new WaitForSeconds(1f);
         obj.SetActive(true);
         GameManager.Instance.IsProcessing = true;
         GameManager.Instance.IsLoading = true;

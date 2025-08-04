@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class AudioEventListener : MonoBehaviour, IObserver
@@ -34,13 +35,19 @@ public class AudioEventListener : MonoBehaviour, IObserver
                 AudioManager.Instance.PlaySFX(AudioManager.Instance.move);
                 break;
             case GameEvent.LevelCompleteSFX:
-                AudioManager.Instance.PlaySFX(AudioManager.Instance.complete);
+                StartCoroutine(DelaySFX(1f, AudioManager.Instance.complete));
                 break;
             case GameEvent.LevelFailSFX:
-                AudioManager.Instance.PlaySFX(AudioManager.Instance.fail);
+                StartCoroutine(DelaySFX(1f, AudioManager.Instance.fail));
                 break;
             default:
                 break;
         }
+    }
+
+    IEnumerator DelaySFX(float time, AudioClip sfx)
+    {
+        yield return new WaitForSeconds(time);
+        AudioManager.Instance.PlaySFX(sfx);
     }
 }

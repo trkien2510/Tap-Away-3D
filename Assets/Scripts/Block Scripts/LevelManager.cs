@@ -18,7 +18,7 @@ public class LevelManager : Subject
             NotifyObserver(GameEvent.LevelCompleteSFX);
             sended = true;
         }
-        else if (!IsLevelComplete() && GameManager.Instance.TotalMoves < 0 && !sended)
+        else if (!IsLevelComplete() && GameManager.Instance.TotalMoves <= 0 && !sended)
         {
             NotifyObserver(GameEvent.Fail);
             NotifyObserver(GameEvent.LevelFailSFX);
@@ -30,9 +30,10 @@ public class LevelManager : Subject
     {
         foreach (Transform child in transform)
         {
-            if (child.gameObject.activeSelf && 
-                child.GetComponent<BlockProperties>() != null && 
-                !child.GetComponent<BlockProperties>().isHardBlock)
+            if (child.gameObject.activeSelf &&
+                child.GetComponent<BlockProperties>() != null &&
+                !child.GetComponent<BlockProperties>().isHardBlock &&
+                !child.GetComponent<MoveBlock>().isMoving)
             {
                 return false;
             }
