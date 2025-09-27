@@ -11,4 +11,5 @@ public enum GameEvent
     MoveSFX,
     LevelCompleteSFX,
     LevelFailSFX,
+    ClickSFX,
 }

@@ -14,7 +14,7 @@ public class UIEventListener : MonoBehaviour, IObserver
         if (GameManager.Instance != null)
         {
             currentLevel.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.CurrentLevel;
-            totalMoves.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.TotalMoves.ToString();
+            totalMoves.GetComponent<TextMeshProUGUI>().text = "Move limit: " + GameManager.Instance.TotalMoves.ToString();
         }
     }
 

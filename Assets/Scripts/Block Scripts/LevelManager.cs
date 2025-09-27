@@ -7,7 +7,6 @@ public class LevelManager : Subject
     private void OnEnable()
     {
         sended = false;
-        FindObjectOfType<UIEventListener>().RegisterObservers();
     }
 
     void Update()

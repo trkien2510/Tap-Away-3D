@@ -1,24 +1,33 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelLoader : MonoBehaviour
 {
-    [SerializeField] private GameObject[] levels;
+    private List<GameObject> listLevels = new List<GameObject>();
 
-
-    private void Start()
+    private void Awake()
     {
-        ReloadLevel();
+        LoadLevelToList();
+    }
+
+    private void LoadLevelToList()
+    {
+        foreach (Transform child in transform)
+        {
+            listLevels.Add(child.gameObject);
+        }
     }
 
     public void LoadNextLevel()
     {
         if (GameManager.Instance.IsLoading) return;
-        foreach (GameObject level in levels)
+        if (GameManager.Instance.IsProcessing) return;
+        for (int i = 0; i < listLevels.Count; i++)
         {
-            if (level.activeSelf)
+            if (listLevels[i].activeSelf)
             {
-                int nextIndex = (System.Array.IndexOf(levels, level) + 1) % levels.Length;
-                LoadLevel(level, nextIndex);
+                int nextIndex = (i + 1) % listLevels.Count;
+                LoadLevel(listLevels[i], nextIndex);
                 break;
             }
         }
@@ -27,12 +36,13 @@ public class LevelLoader : MonoBehaviour
     public void LoadPreviousLevel()
     {
         if (GameManager.Instance.IsLoading) return;
-        foreach (GameObject level in levels)
+        if (GameManager.Instance.IsProcessing) return;
+        for (int i = 0; i < listLevels.Count; i++)
         {
-            if (level.activeSelf)
+            if (listLevels[i].activeSelf)
             {
-                int previousIndex = (System.Array.IndexOf(levels, level) - 1 + levels.Length) % levels.Length;
-                LoadLevel(level, previousIndex);
+                int previousIndex = (i - 1 + listLevels.Count) % listLevels.Count;
+                LoadLevel(listLevels[i], previousIndex);
                 break;
             }
         }
@@ -40,16 +50,18 @@ public class LevelLoader : MonoBehaviour
 
     public void ReloadLevel()
     {
-        foreach (GameObject level in levels)
+        if (GameManager.Instance.IsLoading) return;
+        if (GameManager.Instance.IsProcessing) return;
+        for (int i = 0; i < listLevels.Count; i++)
         {
-            if (level.activeSelf)
+            if (listLevels[i].activeSelf)
             {
-                level.SetActive(false);
-                LoadLevel(level, System.Array.IndexOf(levels, level));
+                listLevels[i].SetActive(false);
+                LoadLevel(listLevels[i], i);
+                FindObjectOfType<TotalMoves>().ChangeDifficulty();
                 break;
             }
         }
-        FindObjectOfType<TotalMoves>().ChangeDifficulty();
     }
 
     private void LoadLevel(GameObject level, int index)
@@ -60,10 +72,10 @@ public class LevelLoader : MonoBehaviour
         }
         level.transform.rotation = Quaternion.Euler(0, 0, 0);
         level.SetActive(false);
-        levels[index].SetActive(true);
-        EnableChild(levels[index]);
-        levels[index].transform.rotation = Quaternion.Euler(45, 45, 0);
-        GameManager.Instance.CurrentLevel = levels[index].name;
+        listLevels[index].SetActive(true);
+        EnableChild(listLevels[index]);
+        listLevels[index].transform.rotation = Quaternion.Euler(45, 45, 0);
+        GameManager.Instance.CurrentLevel = listLevels[index].name;
         GameManager.Instance.IsLoading = false;
         GameManager.Instance.IsProcessing = false;
     }

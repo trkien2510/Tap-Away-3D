@@ -62,7 +62,8 @@ public class TotalMoves : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            if (child.gameObject.activeSelf && !child.GetComponent<BlockProperties>().isHardBlock)
+            var blockProps = child.GetComponent<BlockProperties>();
+            if (child.gameObject.activeSelf && blockProps != null && !blockProps.isHardBlock)
             {
                 num++;
             }

@@ -40,6 +40,9 @@ public class AudioEventListener : MonoBehaviour, IObserver
             case GameEvent.LevelFailSFX:
                 StartCoroutine(DelaySFX(1f, AudioManager.Instance.fail));
                 break;
+            case GameEvent.ClickSFX:
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.click);
+                break;
             default:
                 break;
         }

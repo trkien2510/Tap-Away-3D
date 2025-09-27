@@ -19,16 +19,15 @@ public abstract class Subject : MonoBehaviour
     protected void NotifyObserver(GameEvent action)
     {
         var currentObservers = new List<IObserver>(observers);
-
         foreach (var observer in currentObservers)
         {
-            try
+            if (observer != null)
             {
                 observer.OnNotify(action);
             }
-            catch (System.Exception e)
+            else
             {
-                Debug.LogWarning(e.Message);
+                observers.Remove(observer);
             }
         }
     }

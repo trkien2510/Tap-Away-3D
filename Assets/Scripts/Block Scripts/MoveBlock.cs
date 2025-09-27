@@ -5,14 +5,16 @@ using UnityEngine;
 public class MoveBlock : Subject
 {
     private float moveSpeed = 10f;
+    private float timeToDisable = 0.5f;
 
     [HideInInspector] public bool isMoving = false;
     private Vector3 mouseDownPos;
 
     private void OnEnable()
     {
+        timeToDisable = 0.5f;
+        isMoving = false;
         ChangeMaterialColor("Plane", Color.white);
-        FindObjectOfType<AudioEventListener>().RegisterObservers();
     }
 
     private void Update()
@@ -47,6 +49,7 @@ public class MoveBlock : Subject
                 if (!IsPathBlocked())
                 {
                     NotifyObserver(GameEvent.MinusCounting);
+                    StartCoroutine(DisableAfterTime());
                 }
             }
         }
@@ -71,7 +74,7 @@ public class MoveBlock : Subject
         transform.position = transform.parent.TransformPoint(localPos);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void DisableBlock()
     {
         isMoving = false;
         GameManager.Instance.IsProcessing = false;
@@ -119,5 +122,10 @@ public class MoveBlock : Subject
                 if (renderer != null) renderer.material.color = color;
             }
         }
+    }
+    private IEnumerator DisableAfterTime()
+    {
+        yield return new WaitForSeconds(timeToDisable);
+        DisableBlock();
     }
 }
