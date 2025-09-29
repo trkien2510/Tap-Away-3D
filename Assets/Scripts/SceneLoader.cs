@@ -3,6 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : Subject
 {
+    private void OnEnable()
+    {
+        FindAnyObjectByType<AudioEventListener>().RegisterObservers();
+    }
+
     public void LoadNextScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

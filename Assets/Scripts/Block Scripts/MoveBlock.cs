@@ -15,6 +15,9 @@ public class MoveBlock : Subject
         timeToDisable = 0.5f;
         isMoving = false;
         ChangeMaterialColor("Plane", Color.white);
+        FindAnyObjectByType<BlockProperties>().RegisterObservers();
+        FindAnyObjectByType<UIEventListener>().RegisterObservers();
+        FindAnyObjectByType<AudioEventListener>().RegisterObservers();
     }
 
     private void Update()

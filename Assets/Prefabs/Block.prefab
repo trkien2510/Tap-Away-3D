@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02936df8b7eb0574c909c73c1d2d3a0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockData: {fileID: 11400000, guid: 9c0fb2363a827fb42ab320e80796a091, type: 2}
   direction: 2
   isHardBlock: 0
   isBlockCounting: 0
@@ -77,6 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 727bceea71db6d74f9ec4cc15ef12aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockData: {fileID: 11400000, guid: 9c0fb2363a827fb42ab320e80796a091, type: 2}
   isMoving: 0
 --- !u!33 &3560861487987530077
 MeshFilter:

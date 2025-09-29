@@ -17,7 +17,7 @@ public class BlockProperties : Subject, IObserver
 
     [Header("Block Counting")]
     [HideInInspector] public bool isBlockCounting = false;
-    [Range(0, 10)] [SerializeField] private int blockCounting = 0;
+    [Range(0, 10)][SerializeField] private int blockCounting = 0;
 
     //init
     private int initialBlockCounting;
@@ -47,12 +47,19 @@ public class BlockProperties : Subject, IObserver
         blockMaterial = GetComponent<Renderer>().sharedMaterial;
         blockCounting = initialBlockCounting;
 
+        FindAnyObjectByType<UIEventListener>().RegisterObservers();
+        FindAnyObjectByType<AudioEventListener>().RegisterObservers();
+
+        RegisterObservers();
+        BlockType();
+    }
+
+    public void RegisterObservers()
+    {
         foreach (var subject in FindObjectsOfType<Subject>())
         {
             subject.AddObserver(this);
         }
-
-        BlockType();
     }
 
     private void OnDisable()

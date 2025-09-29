@@ -7,6 +7,9 @@ public class LevelManager : Subject
     private void OnEnable()
     {
         sended = false;
+        FindAnyObjectByType<BlockProperties>().RegisterObservers();
+        FindAnyObjectByType<UIEventListener>().RegisterObservers();
+        FindAnyObjectByType<AudioEventListener>().RegisterObservers();
     }
 
     void Update()
